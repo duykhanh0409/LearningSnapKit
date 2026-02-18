@@ -46,7 +46,7 @@ class SimpleProfileViewController: UIViewController {
         stack.axis = .horizontal
         stack.distribution = .fillEqually
         stack.spacing = 20
-        stack.backgroundColor = .gray
+//        stack.backgroundColor = .gray
         return stack
     }()
 
@@ -102,7 +102,7 @@ class SimpleProfileViewController: UIViewController {
     private func setupConstraints() {
         // Profile Image - centered at top
         profileImageView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(40)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(0)
             make.centerX.equalToSuperview()
             make.size.equalTo(120)
         }
@@ -123,7 +123,7 @@ class SimpleProfileViewController: UIViewController {
         statsStackView.snp.makeConstraints { make in
             make.top.equalTo(bioLabel.snp.bottom).offset(32)
             make.left.right.equalToSuperview().inset(40)
-            make.height.equalTo(60)
+//            make.height.equalTo(50)
         }
 
         // Edit Button - below stats
