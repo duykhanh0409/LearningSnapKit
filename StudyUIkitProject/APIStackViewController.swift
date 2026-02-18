@@ -83,7 +83,7 @@ class APIStackViewController: UIViewController {
     private let dynamicCells: [CellData] = [
         CellData(title: "Recent Orders", subtitle: "Last 30 days orders from API", color: .systemPurple),
         CellData(title: "Recommendations", subtitle: "Personalized suggestions from API", color: .systemPink),
-//        CellData(title: "Notifications", subtitle: "Unread messages from API", color: .systemRed)
+        CellData(title: "Notifications", subtitle: "Unread messages from API", color: .systemRed)
     ]
 
     private var dynamicCellViews: [CellView] = []
@@ -105,7 +105,7 @@ class APIStackViewController: UIViewController {
         }
 
         // Simulate API call sau 2 giây
-        simulateAPICall()
+//        simulateAPICall()
     }
 
     override func viewDidLayoutSubviews() {
@@ -139,7 +139,7 @@ class APIStackViewController: UIViewController {
         }
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
+            make.top.equalToSuperview().offset(10)
             make.left.right.equalToSuperview().inset(20)
         }
 
@@ -179,7 +179,7 @@ class APIStackViewController: UIViewController {
 
             // Cell height constraint
             cell.snp.makeConstraints { make in
-                make.height.equalTo(80)
+                make.height.equalTo(60)
             }
         }
     }
@@ -189,13 +189,12 @@ class APIStackViewController: UIViewController {
             let cell = CellView(data: cellData)
             cell.isHidden = true  // ⭐ Hidden cells không chiếm space trong stackView!
             cell.alpha = 0  // Cho animation smooth
-
+        
             dynamicCellViews.append(cell)
             mainStackView.addArrangedSubview(cell)
-
             // Cell height constraint
             cell.snp.makeConstraints { make in
-                make.height.equalTo(80)
+                make.height.equalTo(60)
             }
         }
     }
