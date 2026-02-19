@@ -12,17 +12,15 @@ class APIStackViewController: UIViewController {
 
     // MARK: - UI Components
 
-    private let scrollView: UIScrollView = {
-        let scroll = UIScrollView()
-        scroll.backgroundColor = .systemGroupedBackground
-        return scroll
+    private let backgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray6
+        return view
     }()
-
-    private let contentView = UIView()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "API Loading Demo"
+        label.text = "StackView Bottom Sheet"
         label.font = .systemFont(ofSize: 24, weight: .bold)
         label.textAlignment = .center
         return label
@@ -30,33 +28,20 @@ class APIStackViewController: UIViewController {
 
     private let statusLabel: UILabel = {
         let label = UILabel()
-        label.text = "Loading API data in 2 seconds..."
+        label.text = "Bottom sheet pinned at bottom 📍\nDynamic cells will expand UPWARD ⬆️"
         label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .secondaryLabel
         label.textAlignment = .center
+        label.numberOfLines = 0
         return label
-    }()
-
-    // Stack View với background color để thấy rõ bounds
-    private let mainStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 12
-        stack.distribution = .fill
-        stack.alignment = .fill
-        stack.backgroundColor = .systemGray5  // Background để thấy stackView
-        stack.layer.cornerRadius = 16
-        stack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        stack.isLayoutMarginsRelativeArrangement = true
-        return stack
     }()
 
     private let heightLabel: UILabel = {
         let label = UILabel()
-        label.text = "StackView Height: Calculating..."
-        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         label.textColor = .secondaryLabel
         label.textAlignment = .center
+        label.numberOfLines = 0
         return label
     }()
 
@@ -68,6 +53,29 @@ class APIStackViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 12
         return button
+    }()
+
+    // ⭐ Stack View - Bottom Sheet Style
+    private let mainStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 12
+        stack.distribution = .fill
+        stack.alignment = .fill
+        stack.backgroundColor = .systemBackground
+        stack.layer.cornerRadius = 20
+        stack.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]  // Top corners only
+        stack.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
+        stack.isLayoutMarginsRelativeArrangement = true
+        return stack
+    }()
+
+    private let headerLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+        return label
     }()
 
     // MARK: - Properties
@@ -82,8 +90,7 @@ class APIStackViewController: UIViewController {
     // Dynamic cells - show sau API response
     private let dynamicCells: [CellData] = [
         CellData(title: "Recent Orders", subtitle: "Last 30 days orders from API", color: .systemPurple),
-        CellData(title: "Recommendations", subtitle: "Personalized suggestions from API", color: .systemPink),
-        CellData(title: "Notifications", subtitle: "Unread messages from API", color: .systemRed)
+        CellData(title: "Recommendations", subtitle: "Personalized suggestions from API", color: .systemPink)
     ]
 
     private var dynamicCellViews: [CellView] = []
@@ -105,7 +112,7 @@ class APIStackViewController: UIViewController {
         }
 
         // Simulate API call sau 2 giây
-//        simulateAPICall()
+        simulateAPICall()
     }
 
     override func viewDidLayoutSubviews() {
@@ -116,55 +123,54 @@ class APIStackViewController: UIViewController {
     // MARK: - Setup Methods
 
     private func setupUI() {
-        view.backgroundColor = .systemBackground
-        title = "API Stack Demo"
+        view.backgroundColor = .systemGray6
+        title = "StackView Version"
 
-        view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(statusLabel)
-        contentView.addSubview(mainStackView)
-        contentView.addSubview(heightLabel)
-        contentView.addSubview(reloadButton)
+        // Bottom sheet layout
+        view.addSubview(backgroundView)
+        view.addSubview(titleLabel)
+        view.addSubview(statusLabel)
+        view.addSubview(heightLabel)
+        view.addSubview(reloadButton)
+        view.addSubview(mainStackView)  // StackView last (on top visually)
     }
 
     private func setupConstraints() {
-        scrollView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
-        }
-
-        contentView.snp.makeConstraints { make in
+        // Background - full screen
+        backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.width.equalTo(scrollView)
         }
 
+        // Title - at top
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
             make.left.right.equalToSuperview().inset(20)
         }
 
+        // Status - below title
         statusLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.left.right.equalToSuperview().inset(20)
         }
 
-        // ⭐ StackView: Không set height constraint - để tự động tính!
-        mainStackView.snp.makeConstraints { make in
-            make.top.equalTo(statusLabel.snp.bottom).offset(24)
-            make.left.right.equalToSuperview().inset(20)
-            // Không có make.height - intrinsic content size!
-        }
-
+        // Height Label - below status
         heightLabel.snp.makeConstraints { make in
-            make.top.equalTo(mainStackView.snp.bottom).offset(12)
+            make.top.equalTo(statusLabel.snp.bottom).offset(16)
             make.left.right.equalToSuperview().inset(20)
         }
 
+        // Reload Button - below height label
         reloadButton.snp.makeConstraints { make in
             make.top.equalTo(heightLabel.snp.bottom).offset(20)
             make.left.right.equalToSuperview().inset(20)
             make.height.equalTo(50)
-            make.bottom.equalToSuperview().offset(-20)
+        }
+
+        // ⭐ StackView: PINNED TO BOTTOM (expands UPWARD)
+        mainStackView.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide)  // ⭐ Pin to BOTTOM
+            // No height constraint - intrinsic content size
         }
     }
 
@@ -173,36 +179,53 @@ class APIStackViewController: UIViewController {
     }
 
     private func createStaticCells() {
+        // Add header first
+//        headerLabel.text = "📍 \(staticCells.count) Cells Fixed at Bottom"
+//        headerLabel.textColor = .systemOrange
+//        mainStackView.addArrangedSubview(headerLabel)
+
+        headerLabel.snp.makeConstraints { make in
+            make.height.equalTo(30)
+        }
+
+        // Add static cells
         for cellData in staticCells {
-            let cell = CellView(data: cellData)
+            let cell = CellView(data: cellData, isStatic: true)
             mainStackView.addArrangedSubview(cell)
 
             // Cell height constraint
             cell.snp.makeConstraints { make in
-                make.height.equalTo(60)
+                make.height.equalTo(80)
             }
         }
     }
 
+    private func updateHeader() {
+//        let dynamicCount = dynamicCellViews.filter { !$0.isHidden }.count
+//        if dynamicCount > 0 {
+//            headerLabel.text = "⬆️ \(dynamicCount) Dynamic Cells | \(staticCells.count) Fixed Below"
+//            headerLabel.textColor = .systemGreen
+//        } else {
+//            headerLabel.text = "📍 \(staticCells.count) Cells Fixed at Bottom"
+//            headerLabel.textColor = .systemOrange
+//        }
+    }
+
     private func createDynamicCells() {
+        // Don't add dynamic cells yet - will be inserted at top when API loads
         for cellData in dynamicCells {
-            let cell = CellView(data: cellData)
-            cell.isHidden = true  // ⭐ Hidden cells không chiếm space trong stackView!
-            cell.alpha = 0  // Cho animation smooth
-        
+            let cell = CellView(data: cellData, isStatic: false)
+            cell.isHidden = true
+            cell.alpha = 0
             dynamicCellViews.append(cell)
-            mainStackView.addArrangedSubview(cell)
-            // Cell height constraint
-            cell.snp.makeConstraints { make in
-                make.height.equalTo(60)
-            }
         }
     }
 
     // MARK: - API Simulation
 
     private func simulateAPICall() {
-        statusLabel.text = "⏳ Loading API data in 2 seconds..."
+        statusLabel.text = "⏳ Loading API in 2s...\nWatch bottom sheet EXPAND UPWARD ⬆️"
+        statusLabel.textColor = .secondaryLabel
         reloadButton.isEnabled = false
         reloadButton.alpha = 0.5
 
@@ -214,27 +237,53 @@ class APIStackViewController: UIViewController {
 
     private func showDynamicCells() {
         isAPILoaded = true
-        statusLabel.text = "✅ API data loaded! StackView expanded automatically"
+        statusLabel.text = "✅ Loading! Watch sheet EXPAND UPWARD ⬆️"
         statusLabel.textColor = .systemGreen
         reloadButton.isEnabled = true
         reloadButton.alpha = 1.0
 
-        // Show cells với animation
-        for (index, cell) in dynamicCellViews.enumerated() {
-            // Delay mỗi cell một chút để có hiệu ứng cascade
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.15) {
-                cell.isHidden = false  // ⭐ StackView tự động re-layout!
+        // ⭐ Insert cells at TOP (index 0) in reverse order
+        let reversedCells = Array(dynamicCellViews.reversed())
 
-                // Animate fade in + slide
-                UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5) {
-                    cell.alpha = 1.0
-                    // ⭐ Magic happens here: StackView height tự động tăng!
-                    self.view.layoutIfNeeded()
+        for (index, cell) in reversedCells.enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.2) { [weak self] in
+                guard let self = self else { return }
+
+                // ⭐ Insert at TOP of StackView (index 0)
+                // This pushes static cells DOWN
+                self.mainStackView.insertArrangedSubview(cell, at: 0)
+
+                // Setup height constraint
+                cell.snp.makeConstraints { make in
+                    make.height.equalTo(80)
                 }
 
-                // Update height label sau animation
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                // Initial transform (from above)
+                cell.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+                    .translatedBy(x: 0, y: -20)
+                cell.isHidden = false
+                cell.alpha = 0
+
+                // Animate entrance
+                UIView.animate(
+                    withDuration: 0.5,
+                    delay: 0,
+                    usingSpringWithDamping: 0.7,
+                    initialSpringVelocity: 0.4,
+                    options: [.curveEaseOut]
+                ) {
+                    cell.transform = .identity
+                    cell.alpha = 1.0
+                    // ⭐ StackView expands UPWARD (because pinned to bottom)
+                    self.view.layoutIfNeeded()
+                } completion: { _ in
                     self.updateHeightLabel()
+//                    self.updateHeader()
+
+                    // Final status
+                    if index == reversedCells.count - 1 {
+                        self.statusLabel.text = "✅ Complete! Bottom sheet expanded ⬆️"
+                    }
                 }
             }
         }
@@ -242,14 +291,17 @@ class APIStackViewController: UIViewController {
 
     private func updateHeightLabel() {
         let height = mainStackView.frame.height
-        heightLabel.text = String(format: "📏 StackView Height: %.0f px", height)
+        let staticCount = staticCells.count
+        let dynamicCount = dynamicCellViews.filter { !$0.isHidden }.count
 
-        // Thay đổi màu dựa trên height
-        if height > 400 {
-            heightLabel.textColor = .systemGreen
-        } else {
-            heightLabel.textColor = .systemOrange
-        }
+        let metricsText = """
+        📊 Bottom Sheet Metrics:
+        Total: \(staticCount + dynamicCount) (\(dynamicCount) dynamic + \(staticCount) static)
+        Height: \(Int(height)) px
+        """
+
+        heightLabel.text = metricsText
+        heightLabel.textColor = dynamicCount > 0 ? .systemGreen : .systemOrange
     }
 
     // MARK: - Actions
@@ -257,20 +309,34 @@ class APIStackViewController: UIViewController {
     @objc private func reloadButtonTapped() {
         // Reset state
         isAPILoaded = false
+        statusLabel.text = "Bottom sheet pinned at bottom 📍\nDynamic cells will expand UPWARD ⬆️"
         statusLabel.textColor = .secondaryLabel
 
-        // Hide dynamic cells
+        // Remove and hide dynamic cells with animation
         for cell in dynamicCellViews {
-            UIView.animate(withDuration: 0.2) {
+            UIView.animate(
+                withDuration: 0.3,
+                delay: 0,
+                options: [.curveEaseIn]
+            ) {
                 cell.alpha = 0
+                cell.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+                    .translatedBy(x: 0, y: -20)
+                self.view.layoutIfNeeded()
             } completion: { _ in
+                // Remove from StackView
+                self.mainStackView.removeArrangedSubview(cell)
+                cell.removeFromSuperview()
                 cell.isHidden = true
+                cell.transform = .identity
+
                 self.updateHeightLabel()
+//                self.updateHeader()
             }
         }
 
         // Simulate API again
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.simulateAPICall()
         }
     }
@@ -290,7 +356,11 @@ class CellView: UIView {
 
     private let containerView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 12
+        view.layer.cornerRadius = 14
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowRadius = 8
+        view.layer.shadowOpacity = 0.12
         return view
     }()
 
@@ -303,24 +373,34 @@ class CellView: UIView {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = .white
         return label
     }()
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = .systemFont(ofSize: 12, weight: .regular)
         label.textColor = .white.withAlphaComponent(0.8)
         label.numberOfLines = 2
         return label
     }()
 
-    init(data: CellData) {
+    private let badgeLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 10, weight: .bold)
+        label.textColor = .white
+        label.textAlignment = .center
+        label.layer.cornerRadius = 10
+        label.clipsToBounds = true
+        return label
+    }()
+
+    init(data: CellData, isStatic: Bool) {
         super.init(frame: .zero)
         setupUI()
         setupConstraints()
-        configure(with: data)
+        configure(with: data, isStatic: isStatic)
     }
 
     required init?(coder: NSCoder) {
@@ -332,23 +412,26 @@ class CellView: UIView {
         containerView.addSubview(iconView)
         containerView.addSubview(titleLabel)
         containerView.addSubview(subtitleLabel)
+        containerView.addSubview(badgeLabel)
     }
 
     private func setupConstraints() {
         containerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalToSuperview().offset(8)
+            make.left.right.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().offset(-8)
         }
 
         iconView.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(16)
             make.centerY.equalToSuperview()
-            make.size.equalTo(40)
+            make.size.equalTo(30)
         }
 
         titleLabel.snp.makeConstraints { make in
             make.left.equalTo(iconView.snp.right).offset(12)
-            make.right.equalToSuperview().offset(-16)
-            make.top.equalToSuperview().offset(16)
+            make.right.equalTo(badgeLabel.snp.left).offset(-8)
+            make.top.equalToSuperview().offset(6)
         }
 
         subtitleLabel.snp.makeConstraints { make in
@@ -356,10 +439,31 @@ class CellView: UIView {
             make.right.equalTo(titleLabel)
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
         }
+
+        badgeLabel.snp.makeConstraints { make in
+            make.right.equalToSuperview().offset(-16)
+            make.centerY.equalToSuperview()
+            make.width.greaterThanOrEqualTo(50)
+            make.height.equalTo(20)
+        }
     }
 
-    private func configure(with data: CellData) {
-        containerView.backgroundColor = data.color
+    private func configure(with data: CellData, isStatic: Bool) {
+        // ⭐ Visual distinction for bottom sheet effect
+        if isStatic {
+            // Static cells - darker, at bottom
+            containerView.backgroundColor = data.color.withAlphaComponent(0.6)
+            badgeLabel.text = "BOTTOM"
+            badgeLabel.backgroundColor = UIColor.systemGray.withAlphaComponent(0.8)
+            badgeLabel.textColor = .white
+        } else {
+            // Dynamic cells - vibrant, expanding from top
+            containerView.backgroundColor = data.color
+            badgeLabel.text = "DYNAMIC"
+            badgeLabel.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.9)
+            badgeLabel.textColor = .white
+        }
+
         titleLabel.text = data.title
         subtitleLabel.text = data.subtitle
     }

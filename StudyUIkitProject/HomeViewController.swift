@@ -75,9 +75,19 @@ class HomeViewController: UIViewController {
             description: "Lists, cell reuse, and data sources",
             icon: "list.bullet",
             color: .systemOrange,
-            status: .comingSoon,
-            viewController: nil
+            status: .completed,
+            viewController: { UITableViewBasicsViewController() }
         ),
+        LearningTopic(
+            title: "TableView API Demo",
+            description: "Compare TableView vs StackView for dynamic content",
+            icon: "list.bullet.rectangle",
+            color: .systemTeal,
+            status: .completed,
+            viewController: { APITableViewDemoViewController() }
+        ),
+
+        // MARK: - Coming Soon
         LearningTopic(
             title: "UICollectionView",
             description: "Grid layouts and custom flows",
